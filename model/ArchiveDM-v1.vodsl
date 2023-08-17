@@ -1,0 +1,10 @@
+model archive (1.0) "Describes the ODPs and ADPs available within SRCNet"
+  author "Paul Harrison"
+
+// the base types
+  include "../build/tmp/IVOA-v1.0.vodsl"
+
+//meaningless placeholder
+  otype Another "an example otype" {
+  	att: ivoa:string "describe me";
+  }

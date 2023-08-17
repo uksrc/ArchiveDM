@@ -6,15 +6,15 @@ plugins {
 vodml {
     vodmlDir.set(file("vo-dml"))
     vodslDir.set(file("model"))
-    bindingFiles.setFrom(file("vo-dml/TemplateDM-v1.vodml-binding.xml"))
+    bindingFiles.setFrom(file("vo-dml/ArchiveDM-v1.vodml-binding.xml"))
     outputDocDir.set(layout.projectDirectory.dir("doc/std/vodml-generated"))
     outputSiteDir.set(layout.projectDirectory.dir("doc/site/generated")) // N.B the last part of this path must be "generated"
 
 }
 /* uncomment below to run the generation of vodml from vodsl automatically */
-//tasks.named("vodmlJavaGenerate") {
-//    dependsOn("vodslToVodml")
-//}
+tasks.named("vodmlJavaGenerate") {
+    dependsOn("vodslToVodml")
+}
 
 
 tasks.test {
@@ -42,6 +42,11 @@ tasks.register<Copy>("copyJavaDocForSite") {
     into(vodml.outputSiteDir.dir("javadoc"))
     dependsOn(tasks.javadoc)
 
+}
+
+tasks.named("vodmlSite")
+{
+    dependsOn("vodmlJavaGenerate")
 }
 
 tasks.register<Exec>("makeSiteNav")

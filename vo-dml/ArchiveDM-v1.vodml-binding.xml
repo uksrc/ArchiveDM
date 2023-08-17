@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<m:mappedModels xmlns:m="http://www.ivoa.net/xml/vodml-binding/v0.9.1">
+    <model>
+        <name>archive</name> <!-- note that this is the model name and "prefix" to vodml-ids -->
+        <file>ArchiveDM-v1.vo-dml.xml</file> <!-- this is the local file name -->
+        <java-package>org.uksrc.dm.archive</java-package> <!-- the java package for the generated code -->
+        <xml-targetnamespace prefix="arc">http://uksrc.org/vodml/archive</xml-targetnamespace>
+    </model>
+</m:mappedModels>
