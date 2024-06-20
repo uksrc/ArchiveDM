@@ -1,7 +1,12 @@
 plugins {
     // this plugin provides all the vo-dml functionality
-    id("net.ivoa.vo-dml.vodmltools") version "0.3.23"
+    id("net.ivoa.vo-dml.vodmltools") version "0.5.2"
+    `maven-publish`
 }
+
+group = "org.uksrc.archive.dm"
+version = "0.1.0-SNAPSHOT"
+
 
 vodml {
     vodmlDir.set(file("vo-dml"))
@@ -15,7 +20,13 @@ vodml {
 tasks.named("vodmlJavaGenerate") {
     dependsOn("vodslToVodml")
 }
+tasks.named("vodmlSchema") {
+    dependsOn("vodslToVodml")
+}
 
+tasks.named("vodmlSite") {
+    dependsOn("vodslToVodml")
+}
 
 tasks.test {
     useJUnitPlatform()
@@ -23,7 +34,7 @@ tasks.test {
 
 dependencies {
     //all data models will want to depend on the base model at least
-    api("org.javastro.ivoa.vo-dml:ivoa-base:1.0-SNAPSHOT") // IMPL using API so that it appears in transitive compile
+    api("org.javastro.ivoa.vo-dml:ivoa-base:1.1-SNAPSHOT") // IMPL using API so that it appears in transitive compile
 
     // the dependencies below are related to testing
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.7.1")
@@ -64,4 +75,56 @@ tasks.register<Exec>("testSite"){
 tasks.register<Exec>("doSite"){
     commandLine("mkdocs", "gh-deploy", "--force")
     dependsOn("makeSiteNav")
+}
+
+//create jar with the test classes in - this is added as artifact to maven publication below, so automatically created
+val tjar = tasks.register<Jar>("testJar") {
+    from(sourceSets.test.get().output)
+    archiveClassifier.set("test")
+}
+val pjar = tasks.register<Jar>("JarWithoutPersistence") {
+    from(sourceSets.main.get().output)
+    archiveClassifier.set("quarkus")
+    exclude("META-INF/persistence.xml")
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("mavenJava") {
+            from(components["java"])
+            artifact(tjar)
+            artifact(pjar)
+            versionMapping {
+                usage("java-api") {
+                    fromResolutionOf("runtimeClasspath")
+                }
+                usage("java-runtime") {
+                    fromResolutionResult()
+                }
+            }
+            pom {
+                name.set("Archive Data Model")
+                description.set("Code generated from the UKSRC Archive Data model VO-DML")
+                url.set("https://www.uksrc.org/") //TODO find better url
+                licenses {
+                    license {
+                        name.set("The Apache License, Version 2.0")
+                        url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+                    }
+                }
+                developers {
+                    developer {
+                        id.set("pahjbo")
+                        name.set("Paul Harrison")
+                        email.set("paul.harrison@manchester.ac.uk")
+                    }
+                }
+                scm {
+                    connection.set("scm:git:git://github.com/uksrc/ArchiveDM.git")
+                    developerConnection.set("scm:git:ssh://github.com/uksrc/ArchiveDM.git")
+                    url.set("https://github.com/uksrc/ArchiveDM")
+                }
+            }
+        }
+    }
 }

@@ -1,4 +1,4 @@
-model archive (1.0) "Describes the ODPs and ADPs available within SRCNet"
+model archive (0.1) "Describes the ODPs and ADPs available within SRCNet"
   author "Paul Harrison"
 
 // the base types
